@@ -31,13 +31,10 @@ function FileUpload() {
     const reader = new FileReader();
     reader.onload = event => {
       const {result: contents} = event.target;
-      console.log(contents);
       const lines = contents?.split('\n') || [];
-      console.log(lines);
       const cleanedLines = lines.filter(line => !!line);
-      console.log(cleanedLines);
       const data = cleanedLines.map(line => line.split(',').map(value => value * 1));
-      console.log(data);
+      data.sort((row1, row2) => row1[0] - row2[0]);
       setFileData(data);
     };
 
