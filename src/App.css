@@ -17,3 +17,7 @@
 .file-upload {
   padding: 2em;
 }
+
+.error-message {
+  color: red;
+}

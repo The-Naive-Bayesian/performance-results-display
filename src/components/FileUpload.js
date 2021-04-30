@@ -2,6 +2,8 @@ import {useState} from "react";
 
 function FileUpload() {
   const [file, setFile] = useState(null);
+  const [uploadErr, setUploadErr] = useState(null);
+  const [fileData, setFileData] = useState([]);
 
   const onFileSelection = (event) => {
     const newFile = event.target.files[0];
@@ -10,7 +12,36 @@ function FileUpload() {
   }
 
   const onFileUpload = () => {
-    console.log(`TODO: process this file: ${file.name}`);
+    setUploadErr(null);
+    if (!file) return;
+    processCsv(file);
+
+    const fileExtension = getFileExtension(file.name);
+    if (fileExtension !== 'csv') {
+      setUploadErr('File must be .csv');
+    }
+  }
+
+  const getFileExtension = (fileName) => {
+    const fileParts = fileName.split('.');
+    return fileParts[fileParts.length - 1];
+  }
+
+  const processCsv = (file) => {
+    const reader = new FileReader();
+    reader.onload = event => {
+      const {result: contents} = event.target;
+      console.log(contents);
+      const lines = contents?.split('\n') || [];
+      console.log(lines);
+      const cleanedLines = lines.filter(line => !!line);
+      console.log(cleanedLines);
+      const data = cleanedLines.map(line => line.split(',').map(value => value * 1));
+      console.log(data);
+      setFileData(data);
+    };
+
+    reader.readAsText(file);
   }
 
   return (
@@ -19,6 +50,23 @@ function FileUpload() {
       <button onClick={onFileUpload}>
         Upload file
       </button>
+      {uploadErr && <p className={'error-message'}>{uploadErr}</p>}
+      <table>
+        <thead>
+          <th>n</th>
+          <th>Time (ms)</th>
+        </thead>
+        <tbody>
+        {
+          fileData.map(row => (
+            <tr>
+              <td>{row[0]}</td>
+              <td>{row[1]}</td>
+            </tr>
+          ))
+        }
+        </tbody>
+      </table>
     </section>
   );
 }
